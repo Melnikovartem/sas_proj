@@ -1,21 +1,35 @@
-import requests
 from bs4 import BeautifulSoup
 
-page = requests.get(
-    "https://e-disclosure.ru/portal/event.aspx?EventId=1GwHbOyvWUqOt-CgzoqAroQ-B-B")
+import os
+import re
 
+import argparse
 
-soup = BeautifulSoup(page.content, 'html.parser')
+parser = argparse.ArgumentParser()
 
-infoblock = soup.find_all(class_="infoblock")[0]
+parser.add_argument("-i", "--input", type=str, default='html_pages')
+parser.add_argument("-o", "--output", type=str, default='results.db')
 
+args = parser.parse_args()
 
-data = {}
+for file_name in os.listdir(args.input):
+    file_path = f"{args.input}/{file_name}"
+    if not os.path.isfile(file_path) or not re.match(".*\.html", file_name):
+        continue
 
-data["topic"] = infoblock.find_all("h4")[0].get_text()
+    with open(file_path, 'r') as html_file:
 
-data["short_name"] = infoblock.find_all("h2")[0].get_text()
+        soup = BeautifulSoup(html_file.read(), 'html.parser')
 
-text_to_parse = list(soup.find_all(id="cont_wrap")[0].children)[3].get_text()
+        infoblock = soup.find_all(class_="infoblock")[0]
 
-print(content)
+        data = {}
+
+        data["topic"] = infoblock.find_all("h4")[0].get_text()
+
+        data["short_name"] = infoblock.find_all("h2")[0].get_text()
+
+        text_to_parse = list(soup.find_all(id="cont_wrap")
+                             [0].children)[3].get_text()
+
+        print(text_to_parse)

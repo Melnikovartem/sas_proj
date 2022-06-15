@@ -1,2 +1,4 @@
 beautifulsoup4 >= 4.8.2
 requests >= 2.22.0
+argparse>=1.1
+regex>=2.2.1
