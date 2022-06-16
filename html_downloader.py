@@ -18,7 +18,7 @@ if not os.path.isdir(args.output):
     os.mkdir(args.output)
 
 with open(args.input, 'r') as links:
-    for link in links:
+    for link in tqdm(links, desc="downloading"):
         page = requests.get(link.strip("\n"))
 
         file_name = re.search(".*EventId=(.*)$", link)
