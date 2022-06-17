@@ -21,7 +21,17 @@ if not os.path.exists(args.database):
                                     eventId TEXT NOT NULL,
                                     name_short text NOT NULL,
                                     name_long TEXT NOT NULL,
-                                    topic TEXT NOT NULL);'''
+                                    adress TEXT NOT NULL,
+                                    inn TEXT NOT NULL,
+                                    orgn TEXT NOT NULL,
+                                    topic TEXT NOT NULL,
+                                    date DATE,
+                                    audit_inn TEXT,
+                                    audit_name TEXT,
+                                    audit_type TEXT,
+                                    board_names TEXT,
+                                    dividend TEXT NOT NULL,
+                                    );'''
     cursor = sqlite_connection.cursor()
     cursor.execute(sqlite_create_table_query)
     sqlite_connection.commit()

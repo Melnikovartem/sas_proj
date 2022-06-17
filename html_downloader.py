@@ -5,12 +5,14 @@ import re
 import random
 import string
 
+from tqdm import tqdm
 import argparse
 
 parser = argparse.ArgumentParser()
 
 parser.add_argument("-i", "--input", type=str, default='links')
 parser.add_argument("-o", "--output", type=str, default='html_pages')
+parser.add_argument("--hard", action='store_true')
 
 args = parser.parse_args()
 
@@ -19,7 +21,6 @@ if not os.path.isdir(args.output):
 
 with open(args.input, 'r') as links:
     for link in tqdm(links, desc="downloading"):
-        page = requests.get(link.strip("\n"))
 
         file_name = re.search(".*EventId=(.*)$", link)
 
@@ -30,6 +31,11 @@ with open(args.input, 'r') as links:
             file_name = file_name.group(1)
 
         file_path = f"{ args.output}/{file_name}.html"
+
+        if os.path.isfile(file_path) and not args.hard:
+            continue
+
+        page = requests.get(link.strip("\n"))
 
         with open(file_path, "wb") as file:
             file.write(page.content)

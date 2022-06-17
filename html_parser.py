@@ -40,10 +40,24 @@ for file_name in tqdm(os.listdir(args.input), desc="parsing"):
 
         print(text_to_parse)
 
+        dividend = "вопрос не поднимался"
+        audi_sql = "NULL, NULL, NULL"
+
         cursor.execute(f"""
             INSERT INTO parsed_results
-            (eventId, name_short, name_long, topic)  VALUES
-            ('{data["eventId"]}', '{data["name_short"]}', '?' ,'{data["topic"]}')
+            (eventId, name_short, name_long, adress, inn, orgn, topic, date, audit_inn, audit_name, audit_type, board_names, dividend)  VALUES
+            ('{data["eventId"]}',
+            '{data["name_short"]}',
+            '{data["name_long"]}',
+            '{data["adress"]}',
+            '{data["inn"]}',
+            '{data["orgn"]}',
+            '{data["topic"]}',
+            '{data["date"]}',
+            {audi_sql},
+            {board_names or "NULL"},
+            {dividend}
+            )
         """)
 
 sqlite_connection.commit()
