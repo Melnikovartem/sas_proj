@@ -5,7 +5,7 @@ from parser_base import parse_iin
 
 def parse_name_audit(st):
     res = re.search(
-        r"(ооо|ао|ип|фирма)\s*«?[^«»]*(ауд|конс)[^«»]*»?", st.lower())
+        r"(ооо|ао|ип|фирма)\s*«?[^«»]*(ауд|конс|экспер|kpmg|ernst|кпмг|эрнст)[^«»]*»?", st.lower())
     if res:
         return res[0] if len(res[0]) < 50 else None
     return None

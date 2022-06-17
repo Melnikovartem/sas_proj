@@ -45,6 +45,8 @@ def parse_address(line):
     post_index = re.search(r"\d{6},?[ ]?", line)
     if post_index:
         split = post_index[0]
+    elif not split in line:
+        split = "\t"
     return line.split(split)[-1].strip()
 
 
@@ -85,7 +87,7 @@ def parse_text(text):
             # на случай если придерживаются стандартного порядка
             if re.match("^1.1", line) and not data["name_long"]:
                 data["name_long"] = parse_name(line)
-            elif re.match("^1.2", line):
+            elif re.match("^1.2", line) and (re.search(r"(адрес|место)", line.lower())):
                 data['adress'] = parse_address(line)
             elif re.match("^1.3", line):
                 data['orgn'] = parse_ogrn(line)
@@ -129,8 +131,11 @@ def parse_text(text):
                     if not data['inn']:
                         data['inn'] = parse_iin(next_line)
 
-                if not data['adress'] and "адрес" in line.lower():
-                    data['adress'] = parse_iin(line)
+                if not data['adress'] and (re.search(r"(адрес|место)", line.lower())):
+                    adress = parse_address(line)
+                    if not re.search("(город|г\.)", line) and re.search("(город|г\.)", next_line):
+                        adress = parse_address(next_line)
+                    data['adress'] = adress
 
                 if no_date and "дата" in line.lower():
                     # хотим последнюю валидную дату в секции "общая информация"

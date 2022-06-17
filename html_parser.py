@@ -33,6 +33,9 @@ for file_name in tqdm(os.listdir(args.input), desc="parsing"):
                              [0].children)[3].get_text()
         data = parse_text(text_to_parse)
 
+        if not data["inn"]:
+            continue
+
         infoblock = soup.find_all(class_="infoblock")[0]
 
         data["eventId"] = file_name[:-5]
