@@ -49,13 +49,13 @@ def parse_address(line):
 
 
 def parse_ogrn(line):
-    res = re.findall(r"\d{13}", line)
-    return res[0] if len(res) > 0 else None
+    res = re.findall(r"(\d{13})($|\D)", line)
+    return res[0][0] if len(res) > 0 else None
 
 
 def parse_iin(line):
-    res = re.findall(r"\d{10}", line)
-    return res[0] if len(res) > 0 else None
+    res = re.findall(r"(\d{10})($|\D)", line)
+    return res[0][0] if len(res) > 0 else None
 
 
 def parse_date(line):

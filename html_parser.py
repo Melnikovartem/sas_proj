@@ -43,7 +43,7 @@ for file_name in tqdm(os.listdir(args.input), desc="parsing"):
         data["dividend"] = check_divident(text_to_parse)
         data["board_names"] = check_board(text_to_parse)
 
-        audit_results = check_board(text_to_parse)
+        audit_results = check_audit(text_to_parse, data["inn"])
         if audit_results:
             data["audit_inn"] = audit_results["audit_inn"]
             data["audit_name"] = audit_results["audit_name"]
@@ -53,10 +53,10 @@ for file_name in tqdm(os.listdir(args.input), desc="parsing"):
                 "adress", "inn", "orgn", "topic", "date", "dividend", "board_names", "audit_inn", "audit_name", "audit_type"]
         for key in keys:
             if type(data[key]) == str:
-                data[key] = f"'{data[key]}'"
+                info = data[key].replace("'", " ")
+                data[key] = f"'{info}'"
             else:
                 data[key] = "NULL"
-
         cursor.execute(f"""
             INSERT INTO parsed_results
             ({",".join(keys)})  VALUES

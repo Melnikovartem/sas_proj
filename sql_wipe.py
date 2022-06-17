@@ -15,6 +15,7 @@ if args.hard and os.path.exists(args.database):
     os.remove(args.database)
 
 if not os.path.exists(args.database):
+    print(f"creating {args.database}")
     sqlite_connection = sqlite3.connect(args.database)
     sqlite_create_table_query = '''CREATE TABLE parsed_results (
                                     id INTEGER PRIMARY KEY,
