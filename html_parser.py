@@ -1,6 +1,9 @@
 from bs4 import BeautifulSoup
 import sqlite3
 
+from parser_base import parse_text
+from parser_smart import check_divident, check_audit, check_board
+
 import os
 import re
 
@@ -26,38 +29,38 @@ for file_name in tqdm(os.listdir(args.input), desc="parsing"):
 
         soup = BeautifulSoup(html_file.read(), 'html.parser')
 
-        infoblock = soup.find_all(class_="infoblock")[0]
+        text_to_parse = list(soup.find_all(id="cont_wrap")
+                             [0].children)[3].get_text()
+        data = parse_text(text_to_parse)
 
-        data = {}
+        infoblock = soup.find_all(class_="infoblock")[0]
 
         data["eventId"] = file_name[:-5]
 
         data["topic"] = infoblock.find_all("h4")[0].get_text()
         data["name_short"] = infoblock.find_all("h2")[0].get_text()
 
-        text_to_parse = list(soup.find_all(id="cont_wrap")
-                             [0].children)[3].get_text()
+        data["dividend"] = check_divident(text_to_parse)
+        data["board_names"] = check_board(text_to_parse)
 
-        print(text_to_parse)
+        audit_results = check_board(text_to_parse)
+        if audit_results:
+            data["audit_inn"] = audit_results["audit_inn"]
+            data["audit_name"] = audit_results["audit_name"]
+            data["audit_type"] = audit_results["audit_type"]
 
-        dividend = "вопрос не поднимался"
-        audi_sql = "NULL, NULL, NULL"
+        keys = ["eventId", "name_short", "name_long",
+                "adress", "inn", "orgn", "topic", "date", "dividend", "board_names", "audit_inn", "audit_name", "audit_type"]
+        for key in keys:
+            if type(data[key]) == str:
+                data[key] = f"'{data[key]}'"
+            else:
+                data[key] = "NULL"
 
         cursor.execute(f"""
             INSERT INTO parsed_results
-            (eventId, name_short, name_long, adress, inn, orgn, topic, date, audit_inn, audit_name, audit_type, board_names, dividend)  VALUES
-            ('{data["eventId"]}',
-            '{data["name_short"]}',
-            '{data["name_long"]}',
-            '{data["adress"]}',
-            '{data["inn"]}',
-            '{data["orgn"]}',
-            '{data["topic"]}',
-            '{data["date"]}',
-            {audi_sql},
-            {board_names or "NULL"},
-            {dividend}
-            )
+            ({",".join(keys)})  VALUES
+            ({",".join([data[key] for key in keys])})
         """)
 
 sqlite_connection.commit()
