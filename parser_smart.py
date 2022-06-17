@@ -49,9 +49,14 @@ def check_audit(text, company_inn):
 
 
 def check_divident(text):
-    if not "дивиден" in text:
-        return "вопрос не поднимался"
-    return "принято решение выплатить дивиденды" or "принято решение не выплачивать дивиденды"
+    ans = "вопрос не поднимался"
+    lines = text.split("\n")
+    for line in lines:
+        if "дивиденд" in line:
+            ans = "принято решение выплатить дивиденды"
+        if ' не' in line.lower() and res['dividend_discuss'] and 'выпла' in line.lower():
+            ans = "принято решение не выплачивать дивиденды"
+    return ans
 
 
 def check_board(text):
